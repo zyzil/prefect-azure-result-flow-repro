@@ -45,6 +45,8 @@
 
 ### Observing connection string is serialized
 
+For `azure_result_flow.py`
+
 1.  `docker run -it azure-result-flow:<tag from build output> /bin/bash`
 2.  `python`
 3.  Paste code snippet to observe Flow's result
@@ -63,6 +65,32 @@ print(flow.result.connection_string)
 4. Output:
 ```
 >>> print(flow.result.connection_string)
+DefaultEndpointsProtocol=https;AccountName=mystorageaccount;AccountKey=mystoragekey
+```
+
+For `azure_result_task.py`
+
+1.  `docker run -it azure-result-task:<tag from build output> /bin/bash`
+2.  `python`
+3.  Paste code snippet to observe Flow's result
+```python
+
+import cloudpickle
+from prefect.utilities import storage
+with open("/opt/prefect/flows/azure-result-task.prefect", "r") as flow_file:
+    flow_bytes = flow_file.read().encode("utf-8")
+
+flow = storage.flow_from_bytes_pickle(flow_bytes)
+get_word_task = next(t for t in flow.tasks if t.name == "get_word")
+print(get_word_task.result.connection_string)
+
+
+```
+
+4. Output:
+```
+>>> get_word_task = next(t for t in flow.tasks if t.name == "get_word")
+>>> print(get_word_task.result.connection_string)
 DefaultEndpointsProtocol=https;AccountName=mystorageaccount;AccountKey=mystoragekey
 ```
 
